@@ -1,12 +1,12 @@
-// src/features/authSlice.js
+
 
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Async thunk to handle user creation
+
 export const createUser = createAsyncThunk('auth/createUser', async (userData, thunkAPI) => {
   try {
-    const response = await axios.post('/api/users', userData); // Adjust the API endpoint as necessary
+    const response = await axios.post('/api/users', userData); 
     return response.data;
   } catch (error) {
     return thunkAPI.rejectWithValue(error.response.data);

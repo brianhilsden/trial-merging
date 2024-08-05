@@ -21,13 +21,12 @@ export default function Signup() {
         <div className="welcome-section">
           <h1 className="title">Welcome to MY DUKA</h1>
           <img
-            src="https://i.pinimg.com/564x/a6/24/e9/a624e937b25af2336c6559e4e4b7bf7f.jpg" // Updated image source
-            alt="Illustration"
-            className="illustration"
-            width="300"
-            height="300"
-            style={{ aspectRatio: "300/300", objectFit: "cover" }}
-          />
+              src="https://i.pinimg.com/564x/a6/24/e9/a624e937b25af2336c6559e4e4b7bf7f.jpg" 
+              alt="Illustration"
+              className="illustration"
+             
+              
+            />
           <p className="description">
             Join us to manage your inventory efficiently and grow your business.
           </p>
@@ -96,21 +95,7 @@ export default function Signup() {
                 Log In
               </button>
             </p>
-            <div className="divider">
-              <hr className="line" />
-              <span className="divider-text">OR</span>
-              <hr className="line" />
-            </div>
-            <div className="social-buttons">
-              <button className="social-button">
-                <ChromeIcon className="social-icon" />
-                Continue With Google
-              </button>
-              <button className="social-button">
-                <FacebookIcon className="social-icon" />
-                Continue With Facebook
-              </button>
-            </div>
+           
           </div>
         </div>
       </div>
@@ -118,47 +103,7 @@ export default function Signup() {
   );
 }
 
-function ChromeIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <circle cx="12" cy="12" r="10" />
-      <circle cx="12" cy="12" r="4" />
-      <line x1="21.17" x2="12" y1="8" y2="8" />
-      <line x1="3.95" x2="8.54" y1="6.06" y2="14" />
-      <line x1="10.88" x2="15.46" y1="21.94" y2="14" />
-    </svg>
-  );
-}
 
-function FacebookIcon(props) {
-  return (
-    <svg
-      {...props}
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-    >
-      <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z" />
-    </svg>
-  );
-}
 
 function LockIcon(props) {
   return (

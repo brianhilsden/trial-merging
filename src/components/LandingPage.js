@@ -1,6 +1,6 @@
 import React from 'react';
 import './LandingPage.css';
-import myImage from '../assets/images/pexels-rebrand-cities-581004-1367272.jpg';
+import myImage from '../assets/images/a624e937b25af2336c6559e4e4b7bf7f.jpg';
 
 
 

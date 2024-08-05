@@ -1,21 +1,31 @@
 import React from 'react';
+import { useNavigate  , useLocation} from 'react-router-dom';
 import './Login.css';
 
-function Login() {
+const Login = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const role = location.state?.role || "user"
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+    // Perform login logic
+    navigate('/dashboard'); // Redirect to the dashboard after login
+  };
+
   return (
     <div className="login-container">
       <div className="left">
         <h1>Welcome to MY DUKA</h1>
-        
       </div>
       <div className="right">
-        <h2>login</h2>
-        <form>
+        <h2>Login</h2>
+        <form onSubmit={handleLogin}>
           <div className="input-group">
             <input type="text" placeholder="Full Name" required />
           </div>
           <div className="input-group">
-            <input type="email" placeholder="email" required />
+            <input type="email" placeholder="Email" required />
           </div>
           <div className="input-group">
             <input type="password" placeholder="Password" required />
@@ -36,6 +46,6 @@ function Login() {
       </div>
     </div>
   );
-}
+};
 
 export default Login;

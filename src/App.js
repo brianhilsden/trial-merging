@@ -1,15 +1,41 @@
-// src/App.js
+
 import React from 'react';
-import { Provider } from 'react-redux';
-import { store } from './app/store';
+
+
 import ClerksPage from './components/ClerksPage';
 
-function App() {
+
+
+import Signup from './components/Signup'; // Ensure the path is correct
+
+import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
+
+import LandingPage from './components/LandingPage';
+import Login from './components/Login';
+
+import './App.css';
+
+
+
+const App = () => {
   return (
-    <Provider store={store}>
-      <ClerksPage />
-    </Provider>
+
+
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup/>}/>
+        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="/clerk" element={<ClerksPage/>}/>
+      </Routes>
+    </Router>
+
+
   );
-}
+};
 
 export default App;
+
+
+

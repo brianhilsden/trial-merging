@@ -1,14 +1,20 @@
+// src/App.js
 import React from 'react';
+import { createRoot } from 'react-dom/client';
+import { Provider } from 'react-redux';
+import { store } from './store';
+import AdminPage from './components/AdminPage'; // Make sure this path is correct
 
-import Signup from './components/Signup'; // Ensure the path is correct
-import './App.css';
-
-function App() {
+const App = () => {
   return (
-    <div className="App">
-      <Signup />
-    </div>
+    <Provider store={store}>
+      <AdminPage />
+    </Provider>
   );
-}
+};
+
+const container = document.getElementById('root');
+const root = createRoot(container);
+root.render(<App />);
 
 export default App;

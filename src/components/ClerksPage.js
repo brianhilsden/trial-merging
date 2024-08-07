@@ -33,7 +33,6 @@ const ClerksPage = () => {
 
   const handleAddSoldItem = (soldItem) => {
     console.log('Sold item:', soldItem);
-    // Dispatch an action to update the Redux store
    //dispatch(addsoldItem(soldItem));
     setShowSoldItemModal(false);
   };

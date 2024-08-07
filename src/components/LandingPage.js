@@ -7,7 +7,7 @@ const LandingPage = () => {
   const navigate = useNavigate();
 
   const handleNavigate = (role) => {
-    navigate('/login', { state: { role } });
+    navigate(`/login`, { state: { role } });
   };
 
   return (
@@ -18,9 +18,9 @@ const LandingPage = () => {
       </div>
       <div className="right-panel">
         <h2>Continue As</h2>
-        <button onClick={() => handleNavigate('merchant')}>Merchant</button>
-        <button onClick={() => handleNavigate('admin')}>Admin</button>
-        <button onClick={() => handleNavigate('clerk')}>Clerk</button>
+        <button onClick={() => handleNavigate('Merchant')}>Merchant</button>
+        <button onClick={() => handleNavigate('Admin')}>Admin</button>
+        <button onClick={() => handleNavigate('Clerk')}>Clerk</button>
       </div>
     </div>
   );

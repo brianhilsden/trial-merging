@@ -5,8 +5,10 @@ import AddPackageModal from './AddPackageModal';
 import ConfirmPackageModal from './ConfirmPackageModal';
 import SoldItemModal from './SoldItemModal';
 import './ClerksPage.css';
+import { useNavigate } from 'react-router-dom';
 
 const ClerksPage = () => {
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const { packages } = useSelector((state) => state.product);
   const [showAddModal, setShowAddModal] = useState(false);
@@ -37,12 +39,16 @@ const ClerksPage = () => {
     setShowSoldItemModal(false);
   };
   
+  const handleLogout = () =>{
+    localStorage.clear("access_token")
+    navigate("/")
+  }
 
   return (
     <div className="clerks-page">
       <aside className="sidebar">
         <h2>My Duka</h2>
-        <button>Log Out</button>
+        <button onClick={handleLogout}>Log Out</button>
       </aside>
       <main className="main-content">
         <header>

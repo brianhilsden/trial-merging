@@ -6,6 +6,9 @@ const Login = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const role = location.state?.role || "user"
+  console.log(role);
+  
+  
 
   const [formData,setFormData] = useState({email:"",full_name:"",password:""})
 
@@ -21,12 +24,32 @@ const Login = () => {
       headers: {
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({...formData,role:"Admin"})
+      body: JSON.stringify({...formData,role:role})
     })
     .then(res=>res.json())
-    .then(data=>console.log(data))
+    .then(data=>{
+      console.log(data);
+      
+      localStorage.setItem("access_token", data.access_token);
+      let loggedIn = data.user
+      if (data.role = "Clerk"){
+        
+        navigate(`/clerk/${loggedIn.id}`)
+      }
+      else if(data.role = "Admin"){
+        navigate(`/admin/${loggedIn.id}`)
+      }
+      else if(data.role = "Merchant"){
+        navigate("/merchant")
+      }
+      else{
+        navigate("/")
+      }
+  
+      
+    })
     
-    navigate('/dashboard'); // Redirect to the dashboard after login
+   
   }
 
 

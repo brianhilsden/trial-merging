@@ -12,8 +12,10 @@ import {
   setClerks,
   setReports
 } from '../features/adminSlice';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar } from 'recharts';
 import './AdminPage.css';
+import { updateClerk } from '../features/adminSlice';
 
 // Mock data
 const mockSupplyRequests = [
@@ -69,6 +71,8 @@ const AdminPage = () => {
   const [newClerkName, setNewClerkName] = useState('');
   const [newClerkEmail, setNewClerkEmail] = useState('');
   const [showAddClerkPopup, setShowAddClerkPopup] = useState(false);
+
+  const handleUpdateClerkStatus = (id, status) => dispatch(updateClerk({ id, status }));
   const {
     supplyRequests = [],
     products = [],
@@ -110,7 +114,7 @@ const AdminPage = () => {
   };
 
   const handleInactivateClerk = (id) => {
-    // Implement inactivate logic here
+    dispatch(updateClerk({id,status:'inactive'}));
     console.log('Inactivate clerk', id);
   };
 
@@ -263,6 +267,23 @@ const AdminPage = () => {
             </div>
           ))}
         </section>
+        <section className="product-performance-comparison">
+  <h2>Product Performance Comparison</h2>
+  <BarChart width={800} height={400} data={[
+    { name: 'Rice', quantitySold: 53, profit: 1060 },
+    { name: 'Beans', quantitySold: 40, profit: 800 },
+    { name: 'Greengrams', quantitySold: 45, profit: 900 }
+  ]}>
+    <XAxis dataKey="name" />
+    <YAxis yAxisId="left" />
+    <YAxis yAxisId="right" orientation="right" />
+    <CartesianGrid strokeDasharray="3 3" />
+    <Tooltip />
+    <Legend />
+    <Bar yAxisId="left" dataKey="quantitySold" fill="#8884d8" name="Quantity Sold" />
+    <Bar yAxisId="right" dataKey="profit" fill="#82ca9d" name="Profit (KSH)" />
+  </BarChart>
+</section>
       </main>
 
       {showAddClerkPopup && (

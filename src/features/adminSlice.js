@@ -33,6 +33,14 @@ export const fetchClerks = createAsyncThunk(
   }
 );
 
+export const updateClerk = createAsyncThunk(
+  'admin/updateClerk',
+  async ({ id, status }) => {
+    const response = await axios.patch(`/api/clerks/${id}`, { status });
+    return response.data;
+  }
+);
+
 export const fetchReports = createAsyncThunk(
   'admin/fetchReports',
   async () => {
@@ -94,6 +102,12 @@ const adminSlice = createSlice({
     });
     builder.addCase(fetchReports.fulfilled, (state, action) => {
       state.reports = action.payload;
+    });
+    builder.addCase(updateClerk.fulfilled, (state, action) => {
+      const index = state.clerks.findIndex(clerk => clerk.id === action.payload.id);
+      if (index !== -1) {
+        state.clerks[index] = action.payload;
+      }
     });
   },
 });

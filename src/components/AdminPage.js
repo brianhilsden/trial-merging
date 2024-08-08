@@ -12,8 +12,7 @@ import {
   setClerks,
   setReports
 } from '../features/adminSlice';
-// import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar,PieChart,Pie } from 'recharts';
 import './AdminPage.css';
 import { updateClerk } from '../features/adminSlice';
 
@@ -283,6 +282,25 @@ const AdminPage = () => {
     <Bar yAxisId="left" dataKey="quantitySold" fill="#8884d8" name="Quantity Sold" />
     <Bar yAxisId="right" dataKey="profit" fill="#82ca9d" name="Profit (KSH)" />
   </BarChart>
+</section>
+<section className="clerk-performance-comparison">
+  <h2>Clerk Performance Comparison</h2>
+  <PieChart width={800} height={400}>
+    <Pie
+      data={[
+        { name: 'Clerk A', value: 53, fill: '#8884d8' },
+        { name: 'Clerk B', value: 40, fill: '#82ca9d' },
+      ]}
+      dataKey="value"
+      nameKey="name"
+      cx="50%"
+      cy="50%"
+      outerRadius={120}
+      label
+    />
+    <Tooltip />
+    <Legend />
+  </PieChart>
 </section>
       </main>
 

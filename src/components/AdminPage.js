@@ -159,38 +159,61 @@ const AdminPage = () => {
         </section>
 
         <section className="products">
-          <h2>Products</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Item</th>
-                <th>Paid Status</th>
-                <th>Spoilt</th>
-                <th>Remaining Stock</th>
-                <th>Unit Price</th>
-                <th>Buying Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {products.map(product => (
-                <tr key={product.id}>
-                  <td>{product.name}</td>
-                  <td>
-                    {product.paymentStatus === 'paid' ? (
-                      'Paid'
-                    ) : (
-                      <button onClick={() => handleMarkAsPaid(product.id)}>Mark as Paid</button>
-                    )}
-                  </td>
-                  <td>{product.spoilt}</td>
-                  <td>{product.remaining}</td>
-                  <td>{product.unitPrice}</td>
-                  <td>{product.buyingPrice}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+  <h2>Paid Products</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Paid Status</th>
+        <th>Spoilt</th>
+        <th>Remaining Stock</th>
+        <th>Unit Price</th>
+        <th>Buying Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {products.filter(product => product.paymentStatus === 'paid').map(product => (
+        <tr key={product.id}>
+          <td>{product.name}</td>
+          <td>Paid</td>
+          <td>{product.spoilt}</td>
+          <td>{product.remaining}</td>
+          <td>{product.unitPrice}</td>
+          <td>{product.buyingPrice}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+
+  <h2>Unpaid Products</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Item</th>
+        <th>Paid Status</th>
+        <th>Spoilt</th>
+        <th>Remaining Stock</th>
+        <th>Unit Price</th>
+        <th>Buying Price</th>
+      </tr>
+    </thead>
+    <tbody>
+      {products.filter(product => product.paymentStatus === 'unpaid').map(product => (
+        <tr key={product.id}>
+          <td>{product.name}</td>
+          <td>
+            <button onClick={() => handleMarkAsPaid(product.id)}>Mark as Paid</button>
+          </td>
+          <td>{product.spoilt}</td>
+          <td>{product.remaining}</td>
+          <td>{product.unitPrice}</td>
+          <td>{product.buyingPrice}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</section>
+
 
         <section className="clerks">
           <h2>Clerks</h2>

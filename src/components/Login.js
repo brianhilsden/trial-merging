@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate  , useLocation} from 'react-router-dom';
 import './Login.css';
+import { useDispatch } from 'react-redux';
+import { addUser } from '../features/userSlice';
 
 const Login = () => {
+  const dispatch = useDispatch()
   const navigate = useNavigate();
   const location = useLocation();
   const role = location.state?.role || "user"
@@ -28,18 +31,20 @@ const Login = () => {
     })
     .then(res=>res.json())
     .then(data=>{
-      console.log(data);
+     
       
       localStorage.setItem("access_token", data.access_token);
       let loggedIn = data.user
-      if (data.role = "Clerk"){
+      dispatch(addUser(loggedIn))
+      
+      if (loggedIn.role === "Clerk"){
         
         navigate(`/clerk/${loggedIn.id}`)
       }
-      else if(data.role = "Admin"){
+      else if(loggedIn.role === "Admin"){
         navigate(`/admin/${loggedIn.id}`)
       }
-      else if(data.role = "Merchant"){
+      else if(loggedIn.role === "Merchant"){
         navigate("/merchant")
       }
       else{
@@ -48,6 +53,8 @@ const Login = () => {
   
       
     })
+    .catch(error=>console.log(error)
+    )
     
    
   }
@@ -75,14 +82,14 @@ const Login = () => {
           <div className="forgot-password">
             <a href="#">Forgot password?</a>
           </div>
-          <button type="submit" >LOG IN</button>
+          <button className='button_login' type="submit" >LOG IN</button>
           <div className="signup-link">
-            <a href="#">Sign Up</a>
+            <button className='button_signup'  onClick={()=>navigate("/signup")}>Sign Up</button>
           </div>
           <div className="or">OR</div>
           <div className="social-login">
-            <button type="button">Continue With Google</button>
-            <button type="button">Continue With Facebook</button>
+            <button className='button_login' type="button">Continue With Google</button>
+            <button className='button_login' type="button">Continue With Facebook</button>
           </div>
         </form>
       </div>

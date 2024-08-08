@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import './AddPackageModal.css';
+import { useSelector } from 'react-redux';
 
 const AddPackageModal = ({ onClose, onAddPackage }) => {
+
   const [formData, setFormData] = useState({
     name: '',
     category: '',
@@ -17,6 +19,8 @@ const AddPackageModal = ({ onClose, onAddPackage }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     onAddPackage(formData);
+    
+   
   };
 
   return (

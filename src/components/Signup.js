@@ -3,9 +3,11 @@ import React from 'react';
 import { useDispatch } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { createUser } from '../features/authSlice'; 
+import { useNavigate } from 'react-router-dom';
 import './Signup.css'; 
 
 export default function Signup() {
+  const navigate = useNavigate()
   const dispatch = useDispatch();
   const { register, handleSubmit } = useForm();
 
@@ -90,7 +92,7 @@ export default function Signup() {
               Already have an account?{" "}
               <button
                 className="login-button"
-                onClick={() => alert('Redirect to login page')}
+                onClick={() => navigate("/login")}
               >
                 Log In
               </button>

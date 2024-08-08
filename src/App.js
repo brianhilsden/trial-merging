@@ -1,15 +1,16 @@
 
 import React from 'react';
-
+import { useEffect } from 'react';
 
 import ClerksPage from './components/ClerksPage';
 
-
+import { useDispatch } from 'react-redux';
+import { addUser } from './features/userSlice';
 
 import Signup from './components/Signup'; // Ensure the path is correct
 
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-
+import MerchantDashboard from './components/MerchantDashboard/MerchantDashboard';
 import LandingPage from './components/LandingPage';
 import Login from './components/Login';
 
@@ -18,7 +19,9 @@ import './App.css';
 
 
 const App = () => {
- /*  useEffect(() => {
+  const dispatch = useDispatch()
+ 
+  useEffect(() => {
     const token = localStorage.getItem('access_token');
     if (token) {
       fetch('https://my-duka-back-end.vercel.app/check_session', {
@@ -33,17 +36,18 @@ const App = () => {
         return response.json(); // Parse JSON response
       })
       .then(userData => {
-        setIsLoggedIn(true);
-        setUser(userData); // Set user data once fetched
+        console.log(userData);
+        
+        dispatch(addUser(userData)); // Set user data once fetched
       })
       .catch(error => {
         console.error('Token verification failed:', error);
-        setIsLoggedIn(false);
-        setUser(null); // Reset user state if verification fails
-        localStorage.removeItem('access_token');
+       
       });
     }
-  }, []); */
+  }, [dispatch]);
+
+  
   return (
 
 
@@ -54,6 +58,7 @@ const App = () => {
         <Route path="/signup" element={<Signup/>}/>
         <Route path="*" element={<Navigate to="/" />} />
         <Route path="/clerk/:id" element={<ClerksPage/>}/>
+        <Route path='/merchant' element={<MerchantDashboard/>}/>
       </Routes>
     </Router>
 

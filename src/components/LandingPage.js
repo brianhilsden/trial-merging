@@ -18,9 +18,9 @@ const LandingPage = () => {
       </div>
       <div className="right-panel">
         <h2>Continue As</h2>
-        <button onClick={() => handleNavigate('Merchant')}>Merchant</button>
-        <button onClick={() => handleNavigate('Admin')}>Admin</button>
-        <button onClick={() => handleNavigate('Clerk')}>Clerk</button>
+        <button className='button_login' onClick={() => handleNavigate('Merchant')}>Merchant</button>
+        <button className='button_login' onClick={() => handleNavigate('Admin')}>Admin</button>
+        <button className='button_login' onClick={() => handleNavigate('Clerk')}>Clerk</button>
       </div>
     </div>
   );

@@ -1,13 +1,12 @@
-
 import productReducer from '../features/productSlice';
 import userReducer from "../features/userSlice"
-import truthValueReducer from "../features/truthValueSlice"
-
+import truthValueReducer from "../features/truthValueSlice";
+import authReducer from "../features/authSlice";
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '../features/authSlice';
-
+import adminReducer from '../features/adminSlice';
 export const store = configureStore({
   reducer: {
+    admin: adminReducer,
     auth: authReducer,
     product: productReducer,
     user:userReducer,
@@ -15,4 +14,5 @@ export const store = configureStore({
 
   },
 });
+
 

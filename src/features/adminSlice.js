@@ -1,3 +1,4 @@
+
 // adminSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
@@ -74,7 +75,7 @@ const adminSlice = createSlice({
     markProductAsPaid: (state, action) => {
       const index = state.products.findIndex(product => product.id === action.payload);
       if (index !== -1) {
-        state.products[index].paymentStatus = 'paid';
+        state.products[index].payment_status = 'paid';
       }
     },
     setClerks: (state, action) => {

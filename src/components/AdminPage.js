@@ -1,355 +1,552 @@
 // AdminPage.js
-import React, { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+
 import {
-  approveSupplyRequest,
-  declineSupplyRequest,
-  markProductAsPaid,
-  addClerk,
-  removeClerk,
-  setSupplyRequests,
-  setProducts,
-  setClerks,
-  setReports
-} from '../features/adminSlice';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar,PieChart,Pie } from 'recharts';
-import './AdminPage.css';
-import { updateClerk } from '../features/adminSlice';
-
-// Mock data
-const mockSupplyRequests = [
-  { id: 1, supplier: 'Supplier A', quantity: 100, status: 'Pending' },
-  { id: 2, supplier: 'Supplier B', quantity: 200, status: 'Pending' },
-  { id: 3, supplier: 'Supplier C', quantity: 150, status: 'Pending' },
-];
-
-const mockProducts = [
-  { id: 1, name: 'Rice', paymentStatus: 'unpaid', spoilt: 5, remaining: 95, unitPrice: 100, buyingPrice: 80 },
-  { id: 2, name: 'Beans', paymentStatus: 'paid', spoilt: 2, remaining: 48, unitPrice: 120, buyingPrice: 100 },
-  { id: 3, name: 'Greengrams', paymentStatus: 'unpaid', spoilt: 1, remaining: 49, unitPrice: 150, buyingPrice: 130 },
-];
-
-const mockClerks = [
-  { id: 1, name: 'Clerk A', email: 'clerka@example.com', status: 'active' },
-  { id: 2, name: 'Clerk B', email: 'clerkb@example.com', status: 'active' },
-];
-
-const mockSales = {
-  'Clerk A': [
-    { date: '2023-08-01', item: 'Rice', quantitySold: 10, quantityInHand: 90, profit: 200 },
-    { date: '2023-08-01', item: 'Beans', quantitySold: 5, quantityInHand: 45, profit: 100 },
-    { date: '2023-08-01', item: 'Greengrams', quantitySold: 8, quantityInHand: 42, profit: 160 },
-  ],
-  'Clerk B': [
-    { date: '2023-08-01', item: 'Rice', quantitySold: 8, quantityInHand: 92, profit: 160 },
-    { date: '2023-08-01', item: 'Beans', quantitySold: 6, quantityInHand: 44, profit: 120 },
-    { date: '2023-08-01', item: 'Greengrams', quantitySold: 7, quantityInHand: 43, profit: 140 },
-  ],
-};
-
-const mockReports = {
-  rice: [
-    { date: '2023-08-01', quantitySold: 18, quantityInHand: 82, profit: 360 },
-    { date: '2023-08-02', quantitySold: 15, quantityInHand: 67, profit: 300 },
-    { date: '2023-08-03', quantitySold: 20, quantityInHand: 47, profit: 400 },
-  ],
-  beans: [
-    { date: '2023-08-01', quantitySold: 11, quantityInHand: 39, profit: 220 },
-    { date: '2023-08-02', quantitySold: 13, quantityInHand: 26, profit: 260 },
-    { date: '2023-08-03', quantitySold: 16, quantityInHand: 10, profit: 320 },
-  ],
-  greengrams: [
-    { date: '2023-08-01', quantitySold: 15, quantityInHand: 35, profit: 300 },
-    { date: '2023-08-02', quantitySold: 18, quantityInHand: 17, profit: 360 },
-    { date: '2023-08-03', quantitySold: 12, quantityInHand: 5, profit: 240 },
-  ],
-};
+approveSupplyRequest,
+declineSupplyRequest,
+markProductAsPaid,
+addClerk,
+removeClerk,
+setSupplyRequests,
+setProducts,
+setClerks,
+setReports,
+} from "../features/adminSlice";
+import {
+LineChart,
+Line,
+XAxis,
+YAxis,
+CartesianGrid,
+Tooltip,
+Legend,
+BarChart,
+Bar,
+PieChart,
+Pie,
+} from "recharts";
+import "./AdminPage.css";
 
 const AdminPage = () => {
-  const dispatch = useDispatch();
-  const [newClerkName, setNewClerkName] = useState('');
-  const [newClerkEmail, setNewClerkEmail] = useState('');
-  const [showAddClerkPopup, setShowAddClerkPopup] = useState(false);
+const dispatch = useDispatch();
+/* const navigate = useNavigate() */
+const [newClerkName, setNewClerkName] = useState("");
+const [newClerkEmail, setNewClerkEmail] = useState("");
+const [showAddClerkPopup, setShowAddClerkPopup] = useState(false);
+const [requests, setRequests] = useState([]);
+const [storeProducts, setStoreProducts] = useState([]);
+const [storeClerks, setStoreClerks] = useState([]);
+const [sales, setSales] = useState([]);
+const [refreshData, setRefreshData] = useState(false);
 
-  const handleUpdateClerkStatus = (id, status) => dispatch(updateClerk({ id, status }));
-  const {
-    supplyRequests = [],
-    products = [],
-    clerks = [],
-    reports = {}
-  } = useSelector((state) => state.admin);
+const {
+supplyRequests = [],
+products = [],
+clerks = [],
+reports = {},
+} = useSelector((state) => state.admin);
 
-  useEffect(() => {
-    // Use mock data for now
-    dispatch(setSupplyRequests(mockSupplyRequests));
-    dispatch(setProducts(mockProducts));
-    dispatch(setClerks(mockClerks));
-    dispatch(setReports(mockReports));
-  }, [dispatch]);
+const groupSalesByProduct = (sales) => {
+return sales.reduce((groups, sale) => {
+const { product_name } = sale;
 
-  const handleApproveRequest = (id) => {
-    dispatch(approveSupplyRequest(id));
-  };
+if (!groups[product_name]) {
+groups[product_name] = [];
+}
+groups[product_name].push(sale);
+return groups;
+}, {});
+};
 
-  const handleDeclineRequest = (id) => {
-    dispatch(declineSupplyRequest(id));
-  };
+const [groupedSalesProduct, setGroupedSalesProduct] = useState({}); // initialize state for grouped sales
 
-  const handleMarkAsPaid = (id) => {
-    dispatch(markProductAsPaid(id));
-  };
+useEffect(() => {
+setGroupedSalesProduct(groupSalesByProduct(sales)); // update state
+dispatch(setReports(groupedSalesProduct)); // Ensure groupedSalesProduct is defined
+}, [sales]); // re-run effect when sales change
 
-  const handleAddClerk = () => {
-    if (newClerkName.trim() && newClerkEmail.trim()) {
-      dispatch(addClerk({ id: Date.now(), name: newClerkName.trim(), email: newClerkEmail.trim(), status: 'active' }));
-      setNewClerkName('');
-      setNewClerkEmail('');
-      setShowAddClerkPopup(false);
-    }
-  };
 
-  const handleRemoveClerk = (id) => {
-    dispatch(removeClerk(id));
-  };
+useEffect(() => {
+// Fetch all required data
 
-  const handleInactivateClerk = (id) => {
-    dispatch(updateClerk({id,status:'inactive'}));
-    console.log('Inactivate clerk', id);
-  };
+const fetchSales = fetch(
+"https://my-duka-back-end.vercel.app/sales/3"
+).then((res) => res.json());
+const fetchRequests = fetch(
+"https://my-duka-back-end.vercel.app/requests/3"
+).then((res) => res.json());
+const fetchProducts = fetch(
+"https://my-duka-back-end.vercel.app/getProducts/3"
+).then((res) => res.json());
+const fetchClerks = fetch(
+"https://my-duka-back-end.vercel.app/getClerk/3"
+).then((res) => res.json());
 
-  return (
-    <div className="admin-page">
-      <aside className="sidebar">
-        <h2>My Duka</h2>
-        <button className="logout-btn">Log Out</button>
-      </aside>
-      <main className="main-content">
-        <header>
-          <h1>Admin</h1>
-          <button className="add-clerk-btn" onClick={() => setShowAddClerkPopup(true)}>
-            <span className="plus-icon">+</span> Add Clerk
-          </button>
-        </header>
-        
-        <section className="supply-requests">
-          <h2>Supply Requests</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Clerk</th>
-                <th>Quantity</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {supplyRequests.map(request => (
-                <tr key={request.id}>
-                  <td>{request.supplier}</td>
-                  <td>{request.quantity}</td>
-                  <td>{request.status}</td>
-                  <td>
-                    <button className="approve-btn" onClick={() => handleApproveRequest(request.id)}>Approve</button>
-                    <button className="decline-btn" onClick={() => handleDeclineRequest(request.id)}>Decline</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+Promise.all([fetchSales, fetchRequests, fetchProducts, fetchClerks])
+.then(([salesData, requestsData, productsData, clerksData]) => {
+const sortedSales = salesData.sales.sort(
+(a, b) => new Date(a.date) - new Date(b.date)
+);
+// Set local state
+setSales(sortedSales);
+setRequests(requestsData);
+setStoreProducts(productsData);
+setStoreClerks(clerksData);
 
-        <section className="products">
-  <h2>Paid Products</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Paid Status</th>
-        <th>Spoilt</th>
-        <th>Remaining Stock</th>
-        <th>Unit Price</th>
-        <th>Buying Price</th>
-      </tr>
-    </thead>
-    <tbody>
-      {products.filter(product => product.paymentStatus === 'paid').map(product => (
-        <tr key={product.id}>
-          <td>{product.name}</td>
-          <td>Paid</td>
-          <td>{product.spoilt}</td>
-          <td>{product.remaining}</td>
-          <td>{product.unitPrice}</td>
-          <td>{product.buyingPrice}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+// Dispatch actions after setting state
+dispatch(setSupplyRequests(requestsData));
+dispatch(setProducts(productsData));
+dispatch(setClerks(clerksData));
 
-  <h2>Unpaid Products</h2>
-  <table>
-    <thead>
-      <tr>
-        <th>Item</th>
-        <th>Paid Status</th>
-        <th>Spoilt</th>
-        <th>Remaining Stock</th>
-        <th>Unit Price</th>
-        <th>Buying Price</th>
-      </tr>
-    </thead>
-    <tbody>
-      {products.filter(product => product.paymentStatus === 'unpaid').map(product => (
-        <tr key={product.id}>
-          <td>{product.name}</td>
-          <td>
-            <button onClick={() => handleMarkAsPaid(product.id)}>Mark as Paid</button>
-          </td>
-          <td>{product.spoilt}</td>
-          <td>{product.remaining}</td>
-          <td>{product.unitPrice}</td>
-          <td>{product.buyingPrice}</td>
-        </tr>
-      ))}
-    </tbody>
-  </table>
+dispatch(setReports(groupedSalesProduct)); // Ensure groupedSalesProduct is defined
+})
+.catch((error) => {
+console.error("Error fetching data:", error);
+});
+}, [refreshData]);
+console.log(groupedSalesProduct);
+
+
+/* 
+const handleLogout = () =>{
+localStorage.clear("access_token")
+navigate("/")
+}
+*/
+
+const handleApproveRequest = (id) => {
+fetch(`https://my-duka-back-end.vercel.app/acceptRequests/${id}`)
+.then((res) => res.json())
+.then((data) => console.log(data))
+.then(()=> setRefreshData((prev) => !prev))
+
+dispatch(approveSupplyRequest(id));
+};
+
+const handleDeclineRequest = (id) => {
+fetch(`https://my-duka-back-end.vercel.app/acceptRequests/${id}`, {
+method: "DELETE",
+})
+.then((res) => res.json())
+.then((data) => console.log(data));
+
+dispatch(declineSupplyRequest(id));
+setRefreshData((prev) => !prev);
+};
+
+const handleMarkAsPaid = (id) => {
+fetch(`https://my-duka-back-end.vercel.app/paymentStatus/${id}`)
+.then((res) => res.json())
+.then((data) => console.log(data));
+
+dispatch(markProductAsPaid(id));
+};
+
+const handleAddClerk = () => {
+if (newClerkName.trim() && newClerkEmail.trim()) {
+dispatch(
+addClerk({
+id: Date.now(),
+name: newClerkName.trim(),
+email: newClerkEmail.trim(),
+status: "active",
+})
+);
+setNewClerkName("");
+setNewClerkEmail("");
+setShowAddClerkPopup(false);
+}
+};
+
+const handleRemoveClerk = async (id) => {
+try {
+const response = await fetch(
+`https://my-duka-back-end.vercel.app/clerkAccountStatus/${id}`,
+{
+method: "DELETE",
+headers: {
+"Content-Type": "application/json",
+},
+}
+);
+
+if (response.ok) {
+console.log(`Deleted clerk`);
+} else {
+console.error("Error deleting clerk:", response.statusText);
+}
+} catch (error) {
+console.error("Error deleting clerk:", error);
+}
+dispatch(removeClerk(id));
+};
+
+const handleInactivateClerk = async (id) => {
+try {
+fetch(
+`https://my-duka-back-end.vercel.app/clerkAccountStatus/${id}`
+).then((response) => {
+if (response.ok) {
+console.log(`Inactivated clerk`);
+setRefreshData((prev) => !prev);
+// Optionally, you can trigger a refresh or update the state here
+return response.json();
+} else {
+console.error("Error inactivating clerk:", response.statusText);
+}
+});
+} catch (error) {
+console.error("Error inactivating clerk:", error);
+}
+
+console.log("Inactivate clerk", id);
+};
+
+const groupSalesByClerk = (sales) => {
+return sales.reduce((groups, sale) => {
+const { username } = sale.clerk;
+
+if (!groups[username]) {
+groups[username] = [];
+}
+groups[username].push(sale);
+return groups;
+}, {});
+};
+
+const groupedSales = groupSalesByClerk(sales);
+
+const calculateTotals = (data) => {
+return Object.keys(data).map((product) => {
+const totalQuantitySold = data[product].reduce(
+(sum, record) => sum + record.quantity_sold,
+0
+);
+const totalProfit = data[product].reduce(
+(sum, record) => sum + record.profit,
+0
+);
+return {
+name: product.charAt(0).toUpperCase() + product.slice(1), // Capitalizes the product name
+quantitySold: totalQuantitySold,
+profit: totalProfit,
+};
+});
+};
+
+const result = calculateTotals(groupedSalesProduct);
+
+const colors = [
+"#8884d8", // Light Purple
+"#82ca9d", // Light Green
+"#ffc658", // Light Orange
+"#a4de6c", // Light Lime
+"#d0ed57", // Light Yellow
+"#8dd1e1", // Light Blue
+"#83a6ed", // Medium Blue
+"#d074cb", // Light Pink
+"#8884d8", // Medium Purple
+"#ff8042", // Orange
+"#ffbb28", // Yellow
+"#00C49F", // Teal
+"#FF8042", // Dark Orange
+"#FFBB28", // Yellow-Orange
+"#FF7F50", // Coral
+"#FF4500", // Orange-Red
+"#FFD700", // Gold
+"#9ACD32", // Yellow-Green
+"#32CD32", // Lime Green
+"#6495ED", // Cornflower Blue
+];
+
+const calculateClerkSales = (data) => {
+if (data[0]) {
+return data.map((clerk, index) => {
+const totalQuantitySold = clerk.salesReports.reduce(
+(sum, report) => sum + report.quantity_sold,
+0
+);
+return {
+name: clerk.username,
+value: totalQuantitySold,
+fill: colors[index] || "#000000", // Assign color from the array or default to black
+};
+});
+}
+};
+
+const clerkSalesData = calculateClerkSales(clerks);
+
+return (
+<div className="admin-page">
+<aside className="sidebar">
+<h2>My Duka</h2>
+<button className="logout-btn">Log Out</button>
+</aside>
+<main className="main-content">
+<header>
+<h1>Admin</h1>
+<button
+className="add-clerk-btn"
+onClick={() => setShowAddClerkPopup(true)}
+>
+<span className="plus-icon">+</span> Add Clerk
+</button>
+</header>
+
+<section className="supply-requests">
+<h2>Supply Requests</h2>
+<table>
+<thead>
+<tr>
+<th>Clerk</th>
+<th>Product</th>
+<th>Quantity</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+{supplyRequests[0] && (
+<tbody>
+{supplyRequests.map((request) => (
+<tr key={request.id}>
+<td>{request.clerk.username}</td>
+<td>{request.product.product_name}</td>
+<td>{request.quantity}</td>
+<td>{request.status}</td>
+
+<td>
+{request.status == "Pending" && (
+<button
+className="approve-btn"
+onClick={() => handleApproveRequest(request.id)}
+>
+Approve
+</button>
+)}
+{request.status == "Pending" && (
+<button
+className="decline-btn"
+onClick={() => handleDeclineRequest(request.id)}
+>
+Decline
+</button>
+)}
+</td>
+</tr>
+))}
+</tbody>
+)}
+</table>
 </section>
 
+<section className="products">
+<h2>Products</h2>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Paid Status</th>
+<th>Spoilt</th>
+<th>Remaining Stock</th>
+<th>Unit Price</th>
+<th>Buying Price</th>
+</tr>
+</thead>
+<tbody>
+{products.map((product) => (
+<tr key={product.id}>
+<td>{product.product_name}</td>
+<td>
+{product.payment_status === "paid" ? (
+"Paid"
+) : (
+<button onClick={() => handleMarkAsPaid(product.id)}>
+Mark as Paid
+</button>
+)}
+</td>
+<td>{product.spoilt_items}</td>
+<td>{product.closing_stock}</td>
+<td>{product.selling_price}</td>
+<td>{product.buying_price}</td>
+</tr>
+))}
+</tbody>
+</table>
+</section>
 
-        <section className="clerks">
-          <h2>Clerks</h2>
-          <table>
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {clerks.map(clerk => (
-                <tr key={clerk.id}>
-                  <td>{clerk.name}</td>
-                  <td>{clerk.email}</td>
-                  <td>{clerk.status}</td>
-                  <td>
-                    <button className="inactivate-btn" onClick={() => handleInactivateClerk(clerk.id)}>Inactivate</button>
-                    <button className="delete-btn" onClick={() => handleRemoveClerk(clerk.id)}>Delete</button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </section>
+<section className="clerks">
+<h2>Clerks</h2>
+<table>
+<thead>
+<tr>
+<th>Name</th>
+<th>Email</th>
+<th>Status</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+{clerks.map((clerk) => (
+<tr key={clerk.id}>
+<td>{clerk.username}</td>
+<td>{clerk.email}</td>
+<td>{clerk.account_status}</td>
+<td>
+<button
+className="inactivate-btn"
+onClick={() => handleInactivateClerk(clerk.id)}
+>
+{clerk.account_status}
+</button>
+<button
+className="delete-btn"
+onClick={() => handleRemoveClerk(clerk.id)}
+>
+Delete
+</button>
+</td>
+</tr>
+))}
+</tbody>
+</table>
+</section>
 
-        {Object.entries(mockSales).map(([clerkName, sales]) => (
-          <section key={clerkName} className="clerk-sales">
-            <h2>{clerkName} Sales</h2>
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Item</th>
-                  <th>Quantity Sold</th>
-                  <th>Quantity in Hand</th>
-                  <th>Profit</th>
-                </tr>
-              </thead>
-              <tbody>
-                {sales.map((sale, index) => (
-                  <tr key={index}>
-                    <td>{sale.date}</td>
-                    <td>{sale.item}</td>
-                    <td>{sale.quantitySold}</td>
-                    <td>{sale.quantityInHand}</td>
-                    <td>{sale.profit}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </section>
-        ))}
+{Object.keys(groupedSales).map((itemName) => (
+<section key={itemName} className="clerk-sales">
+<h3>{itemName}</h3>
+<table>
+<thead>
+<tr>
+<th>DATE</th>
+<th>ITEM</th>
+<th>QUANTITY SOLD</th>
+<th>QUANTITY UNSOLD</th>
+<th>PROFIT</th>
+</tr>
+</thead>
+<tbody>
+{groupedSales[itemName].map((sale) => (
+<tr key={sale.id}>
+<td>{new Date(sale.date).toLocaleDateString()}</td>
+<td>{sale.product_name}</td>
+<td>{sale.quantity_sold}</td>
+<td>{sale.quantity_in_hand}</td>
+<td>{sale.profit}</td>
+</tr>
+))}
+</tbody>
+</table>
+</section>
+))}
 
-        <section className="performance-reports">
-          <h2>Performance Reports</h2>
-          {Object.entries(reports).map(([product, data]) => (
-            <div key={product} className="product-report">
-              <h3>{product.charAt(0).toUpperCase() + product.slice(1)} Sales Trends</h3>
-              <LineChart width={600} height={300} data={data}>
-                <XAxis dataKey="date" />
-                <YAxis yAxisId="left" />
-                <YAxis yAxisId="right" orientation="right" />
-                <CartesianGrid strokeDasharray="3 3" />
-                <Tooltip />
-                <Legend />
-                <Line yAxisId="left" type="monotone" dataKey="quantitySold" stroke="#ffc658" name="Quantity Sold" />
-                <Line yAxisId="left" type="monotone" dataKey="quantityInHand" stroke="#ff0000" name="Quantity in Hand" />
-                <Line yAxisId="right" type="monotone" dataKey="profit" stroke="#82ca9d" name="Profit (KSH)" />
-              </LineChart>
-            </div>
-          ))}
-        </section>
-        <section className="product-performance-comparison">
-  <h2>Product Performance Comparison</h2>
-  <BarChart width={800} height={400} data={[
-    { name: 'Rice', quantitySold: 53, profit: 1060 },
-    { name: 'Beans', quantitySold: 40, profit: 800 },
-    { name: 'Greengrams', quantitySold: 45, profit: 900 }
-  ]}>
-    <XAxis dataKey="name" />
-    <YAxis yAxisId="left" />
-    <YAxis yAxisId="right" orientation="right" />
-    <CartesianGrid strokeDasharray="3 3" />
-    <Tooltip />
-    <Legend />
-    <Bar yAxisId="left" dataKey="quantitySold" fill="#8884d8" name="Quantity Sold" />
-    <Bar yAxisId="right" dataKey="profit" fill="#82ca9d" name="Profit (KSH)" />
-  </BarChart>
+<section className="performance-reports">
+<h2>Performance Reports</h2>
+{Object.entries(reports).map(([product, data]) => (
+<div key={product} className="product-report">
+<h3>
+{product.charAt(0).toUpperCase() + product.slice(1)} Sales
+Trends
+</h3>
+<LineChart width={600} height={300} data={data}>
+<XAxis dataKey="date" />
+<YAxis yAxisId="left" />
+<YAxis yAxisId="right" orientation="right" />
+<CartesianGrid strokeDasharray="3 3" />
+<Tooltip />
+<Legend />
+<Line
+yAxisId="left"
+type="monotone"
+dataKey="quantity_sold"
+stroke="#ffc658"
+name="Quantity Sold"
+/>
+<Line
+yAxisId="left"
+type="monotone"
+dataKey="quantity_in_hand"
+stroke="#ff0000"
+name="Quantity in Hand"
+/>
+<Line
+yAxisId="right"
+type="monotone"
+dataKey="profit"
+stroke="#82ca9d"
+name="Profit (KSH)"
+/>
+</LineChart>
+</div>
+))}
+</section>
+<section className="product-performance-comparison">
+<h2>Product Performance Comparison</h2>
+<BarChart width={800} height={400} data={result}>
+<XAxis dataKey="name" />
+<YAxis yAxisId="left" />
+<YAxis yAxisId="right" orientation="right" />
+<CartesianGrid strokeDasharray="3 3" />
+<Tooltip />
+<Legend />
+<Bar
+yAxisId="left"
+dataKey="quantitySold"
+fill="#8884d8"
+name="Quantity Sold"
+/>
+<Bar
+yAxisId="right"
+dataKey="profit"
+fill="#82ca9d"
+name="Profit (KSH)"
+/>
+</BarChart>
 </section>
 <section className="clerk-performance-comparison">
-  <h2>Clerk Performance Comparison</h2>
-  <PieChart width={800} height={400}>
-    <Pie
-      data={[
-        { name: 'Clerk A', value: 53, fill: '#8884d8' },
-        { name: 'Clerk B', value: 40, fill: '#82ca9d' },
-      ]}
-      dataKey="value"
-      nameKey="name"
-      cx="50%"
-      cy="50%"
-      outerRadius={120}
-      label
-    />
-    <Tooltip />
-    <Legend />
-  </PieChart>
+<h2>Clerk Performance Comparison</h2>
+<PieChart width={800} height={400}>
+<Pie
+data={clerkSalesData}
+dataKey="value"
+nameKey="name"
+cx="50%"
+cy="50%"
+outerRadius={120}
+label
+/>
+<Tooltip />
+<Legend />
+</PieChart>
 </section>
-      </main>
+</main>
 
-      {showAddClerkPopup && (
-        <div className="popup">
-          <div className="popup-content">
-            <h2>Add New Clerk</h2>
-            <input
-              type="text"
-              value={newClerkName}
-              onChange={(e) => setNewClerkName(e.target.value)}
-              placeholder="Enter clerk name"
-            />
-            <input
-              type="email"
-              value={newClerkEmail}
-              onChange={(e) => setNewClerkEmail(e.target.value)}
-              placeholder="Enter clerk email"
-            />
-            <button onClick={handleAddClerk}>Add</button>
-            <button onClick={() => setShowAddClerkPopup(false)}>Cancel</button>
-          </div>
-        </div>
-      )}
-    </div>
-  );
+{showAddClerkPopup && (
+<div className="popup">
+<div className="popup-content">
+<h2>Add New Clerk</h2>
+<input
+type="text"
+value={newClerkName}
+onChange={(e) => setNewClerkName(e.target.value)}
+placeholder="Enter clerk name"
+/>
+<input
+type="email"
+value={newClerkEmail}
+onChange={(e) => setNewClerkEmail(e.target.value)}
+placeholder="Enter clerk email"
+/>
+<button onClick={handleAddClerk}>Add</button>
+<button onClick={() => setShowAddClerkPopup(false)}>Cancel</button>
+</div>
+</div>
+)}
+</div>
+);
 };
 
 export default AdminPage;

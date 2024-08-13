@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { useNavigate  , useLocation} from 'react-router-dom';
+import { useNavigate  , useLocation, Form} from 'react-router-dom';
 import './Login.css';
 import { useDispatch } from 'react-redux';
 import { addUser } from '../features/userSlice';
+import axios, { Axios } from 'axios';
 
 const Login = () => {
   const dispatch = useDispatch()
@@ -68,6 +69,21 @@ const Login = () => {
     
    
   }
+  
+  function uploadFiles(files){
+    const formData = new FormData()
+    formData.append("file",files[0])
+    formData.append("upload_preset","royalty")
+
+    fetch("https://api.cloudinary.com/v1_1/dkwu8nd4d/image/upload", {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(response => console.log(response))
+    .catch(error => console.error('Error:', error))
+
+  }
 
 
 
@@ -82,6 +98,7 @@ const Login = () => {
         <form onSubmit={handleLogin}>
          
           <div className="input-group">
+          <input type='file' onChange={(event)=>uploadFiles(event.target.files)}/>
             <input type="email" placeholder="Email" name='email' value={formData.email} required onChange={handleChange}/>
           </div>
           <div className="input-group">

@@ -32,7 +32,7 @@ const ClerksPage = () => {
   
 
   useEffect(() => {
-    fetch(`https://my-duka-back-end.vercel.app/sales/${store_id}`)
+    fetch(`https://my-duka-back-end.vercel.app/ales/${store_id}`)
       .then(res => res.json())
       .then(data => setSales(data.sales))
     

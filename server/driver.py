@@ -2,7 +2,7 @@ from flask import Blueprint, request,make_response
 from flask_restful import Api, Resource
 from models import Driver,Bus,Schedule,Customer,Seat,Booking
 from datetime import datetime
-from config import bcrypt,jwt,driver_bp,driver_api,db,create_access_token,create_refresh_token,get_jwt_identity,jwt_required
+from .config import bcrypt,jwt,driver_bp,driver_api,db,create_access_token,create_refresh_token,get_jwt_identity,jwt_required
 
 
 class ProtectedResource(Resource):

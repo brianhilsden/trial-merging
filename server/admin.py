@@ -1,12 +1,8 @@
 from flask import Blueprint, request,make_response
 from flask_restful import Api, Resource
-from .models import Admin, Driver, Customer, Bus, Schedule, db
-from flask_jwt_extended import create_access_token, jwt_required,create_refresh_token, get_jwt_identity
-from flask_bcrypt import Bcrypt
+from models import Admin, Driver, Customer, Bus, Schedule
+from config import admin_bp,api,bcrypt,db,create_access_token,jwt_required,create_refresh_token,get_jwt_identity
 
-admin_bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
-api = Api(admin_bp)
-bcrypt = Bcrypt()
 
 class AdminSignup(Resource):
     def post(self):
@@ -81,7 +77,6 @@ class AdminLogin(Resource):
 
 
 class ViewDriverBuses(Resource):
-    # @jwt_required()
     def get(self):
         """Fetch all buses registered by the driver"""
         driver_id = get_jwt_identity() 
@@ -96,7 +91,6 @@ class ViewDriverBuses(Resource):
         } for bus in buses], 200
 
 class AddDriver(Resource):
-    # @jwt_required()
     def post(self):
         """Add a new driver"""
         data = request.get_json()
@@ -126,20 +120,18 @@ class AddDriver(Resource):
         db.session.commit()
         return {"message": "Driver added successfully."}, 201
 
-class DeleteDriver(Resource):
-    # @jwt_required()
-    def delete(self, driver_id):
-        """Delete a driver"""
-        driver = Driver.query.get(driver_id)
-        if not driver:
-            return {"error": "Driver not found."}, 404
+# class DeleteDriver(Resource):
+#     def delete(self, driver_id):
+#         """Delete a driver"""
+#         driver = Driver.query.get(driver_id)
+#         if not driver:
+#             return {"error": "Driver not found."}, 404
 
-        db.session.delete(driver)
-        db.session.commit()
-        return {"message": "Driver deleted successfully."}, 200
+#         db.session.delete(driver)
+#         db.session.commit()
+#         return {"message": "Driver deleted successfully."}, 200
 
 class ViewCustomers(Resource):
-    # @jwt_required()
     def get(self):
         """View all registered customers"""
         customers = Customer.query.all()
@@ -155,7 +147,6 @@ class ViewCustomers(Resource):
 
 
 class ViewScheduledBuses(Resource):
-    # @jwt_required()
     def get(self):
         """View all scheduled buses"""
         try:
@@ -180,7 +171,6 @@ class ViewScheduledBuses(Resource):
             return {"error": str(e)}, 500
 
 class ViewDrivers(Resource):
-    # @jwt_required()
     def get(self):
         """Get all drivers
         ---
@@ -212,7 +202,6 @@ class ViewDrivers(Resource):
         } for driver in drivers], 200
     
 class ViewDriversByID(Resource):
-    # @jwt_required()
     def get(self, driver_id):
         """Get driver by ID
         ---
@@ -251,7 +240,6 @@ class ViewDriversByID(Resource):
         }, 200
 
 class ViewBuses(Resource):
-    # @jwt_required()
     def get(self):
         """Get all buses
         ---
@@ -280,7 +268,6 @@ class ViewBuses(Resource):
     
 
 class ViewBusesByID(Resource):
-    # @jwt_required()
     def get(self, bus_id):
         """Get bus by ID
         ---
@@ -337,7 +324,7 @@ api.add_resource(ViewDrivers, '/view_drivers')
 api.add_resource(ViewDriversByID, '/drivers/<int:driver_id>', endpoint='view_driver_by_id')
 api.add_resource(ViewDriverBuses, '/driver/buses')
 api.add_resource(AddDriver, '/drivers')
-api.add_resource(DeleteDriver, '/drivers/<int:driver_id>')
+# api.add_resource(DeleteDriver, '/drivers/<int:driver_id>')
 api.add_resource(ViewCustomers, '/customers')
 api.add_resource(ViewBuses, '/buses')
 api.add_resource(ViewBusesByID, '/buses/<int:bus_id>', endpoint='view_buses_by_id')

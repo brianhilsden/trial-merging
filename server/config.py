@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 load_dotenv()
 from flask_swagger_ui import get_swaggerui_blueprint
 from flask_restful import Api
-from flask_jwt_extended import JWTManager,create_access_token,create_refresh_token,get_jwt_identity,jwt_required,current_user
+from flask_jwt_extended import JWTManager
 from flask import Flask,Blueprint,request,make_response,jsonify
 
 app = Flask(__name__)
@@ -31,23 +31,12 @@ bcrypt = Bcrypt(app)
 migrate = Migrate(app, db)
 db.init_app(app)
 
-customer_bp = Blueprint("customer_bp", __name__, url_prefix="/")
-customer_api = Api(customer_bp)
 
 
-driver_bp = Blueprint("driver_bp", __name__, url_prefix="/drivers")
-driver_api = Api(driver_bp)
-
-admin_bp = Blueprint('admin_bp', __name__, url_prefix='/admin')
-api = Api(admin_bp)
-
-jwt = JWTManager(app)
 
 
-# Register blueprints
-app.register_blueprint(customer_bp)
-app.register_blueprint(driver_bp)  
-app.register_blueprint(admin_bp)
+
+
 
 #Swagger
 SWAGGER_URL = '/swagger/'  

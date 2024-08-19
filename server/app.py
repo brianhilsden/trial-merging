@@ -1,14 +1,21 @@
-from .config import app,request,jsonify,db
-from .models import Customer, Booking,Bus,Seat
+from models import Customer, Booking,Bus,Seat,Driver,Schedule,Admin
+from config import app,request,jsonify,db
+from driver import driver_bp
+from customers import customer_bp
+from admin import admin_bp
+
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime
 import base64
 
 
+
 my_endpoint = "https://f0f2-41-80-112-198.ngrok-free.app"
 
-
+app.register_blueprint(driver_bp) 
+app.register_blueprint(customer_bp)
+app.register_blueprint(admin_bp)
 
 @app.route('/mpesa')
 def mpesa_home():
@@ -274,4 +281,5 @@ def get_bus_seats(bus_id):
 
 
 if __name__ == "__main__":
+    print(app.url_map)
     app.run(port=5555, debug=True)

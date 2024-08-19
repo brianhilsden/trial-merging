@@ -1,9 +1,15 @@
-from flask import request,make_response,session
-from flask_restful import Resource
-from .models import Customer, Booking,Bus,Schedule,Seat
+from flask import request,make_response,session,Blueprint
+from flask_restful import Resource,Api
+from models import Customer, Booking,Bus,Schedule,Seat,Admin,Driver
 from datetime import datetime
-from .config import jwt,get_jwt_identity,jwt_required,current_user,bcrypt,create_access_token,create_refresh_token,customer_api,customer_bp,db
+from config import jwt,db,bcrypt
+from flask_jwt_extended import create_access_token,create_refresh_token,get_jwt_identity,jwt_required,current_user
 import logging
+
+
+
+customer_bp = Blueprint("customer_bp", __name__, url_prefix="/")
+customer_api = Api(customer_bp)
 
 
 class ProtectedResource(Resource):
@@ -19,7 +25,18 @@ def user_identity_lookup(user):
 @jwt.user_lookup_loader
 def user_lookup_callback(_jwt_header, jwt_data):
     identity = jwt_data["sub"]
-    return Customer.query.filter_by(id=identity).one_or_none()
+    role = jwt_data.get("role")  # Extract the role from the JWT claims
+
+    if role:
+        if role == 'customer':
+            return Customer.query.filter_by(id=identity).one_or_none()
+        elif role == 'admin':
+            return Admin.query.filter_by(id=identity).one_or_none()
+        elif role == 'driver':
+            return Driver.query.filter_by(id=identity).one_or_none()
+
+    return None
+
 
 
 class CheckSession(Resource):
@@ -75,14 +92,15 @@ class Signup(Resource):
                 phone_number=data["phone_number"],
                 id_or_passport=data["id_or_passport"],
             )
-            access_token = create_access_token(identity=new_customer.id)
+            
             
         except KeyError as e:
             return {"error": f"Missing required field: {e}"}, 400
         db.session.add(new_customer)
         db.session.commit()
+        access_token = create_access_token(identity=new_customer.id, additional_claims={"role": new_customer.role})
 
-        return {"message": "Customer registered successfully","access_token":access_token, "new_customer":new_customer}, 201
+        return {"message": "Customer registered successfully","access_token":access_token, "new_customer":new_customer.to_dict()}, 201
 
 
 class Login(Resource):
@@ -107,8 +125,8 @@ class Login(Resource):
         user = Customer.query.filter_by(email=data["email"]).first()
 
         if user and bcrypt.check_password_hash(user.password, password):
-            access_token = create_access_token(identity=user.id)
-            refresh_token = create_refresh_token(identity=user.id)
+            access_token = create_access_token(identity=user.id, additional_claims={"role": user.role})
+            refresh_token = create_refresh_token(identity=user.id,additional_claims={"role": user.role} )
             
             # Serialize the Customer object into a dictionary
             customer_data = {
@@ -121,7 +139,7 @@ class Login(Resource):
             return {
                 "access_token": access_token,
                 "refresh_token": refresh_token,
-                "customer": customer_data
+                "customer": user.to_dict()
             }, 200
         else:
             return {"error": "Invalid login credentials"}, 401
@@ -346,4 +364,3 @@ customer_api.add_resource(ViewBookings, '/view_bookings/<int:customer_id>')
 customer_api.add_resource(UpdateBooking, '/update_bookings')
 customer_api.add_resource(DeleteBooking, '/delete_booking/<int:booking_id>')
 customer_api.add_resource(BookSeat, '/book-seats')
-

@@ -1,5 +1,5 @@
 from .config import app,request,jsonify,db
-from models import Customer, Booking,Bus,Seat
+from .models import Customer, Booking,Bus,Seat
 import requests
 from requests.auth import HTTPBasicAuth
 from datetime import datetime

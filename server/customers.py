@@ -1,6 +1,6 @@
 from flask import request,make_response,session
 from flask_restful import Resource
-from models import Customer, Booking,Bus,Schedule,Seat
+from .models import Customer, Booking,Bus,Schedule,Seat
 from datetime import datetime
 from .config import jwt,get_jwt_identity,jwt_required,current_user,bcrypt,create_access_token,create_refresh_token,customer_api,customer_bp,db
 import logging

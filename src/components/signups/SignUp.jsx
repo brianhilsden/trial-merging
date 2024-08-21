@@ -36,7 +36,7 @@ const SignUp = () => {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5555/signup",
+        "https://main-project-backend-1z6e.onrender.com/signup",
         {
           method: "POST",
           headers: {
@@ -50,8 +50,6 @@ const SignUp = () => {
         response.json().then((user_data) => {
           localStorage.setItem("access_token", user_data.access_token);
           setUser(user_data.user);
-         
-          console.log("User data:", user_data.user); // Debugging log
           if (user_data.user.role === "admin") {
             navigate("/Main-Project-Frontend/admin-profile");
           } else if (user_data.user.role === ("job-seeker"||"jobseeker")) {

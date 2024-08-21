@@ -16,7 +16,7 @@ const JobSeekersSection = () => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(
-        "http://127.0.0.1:5555/jobseekers",
+        "https://main-project-backend-1z6e.onrender.com/jobseekers",
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -44,7 +44,7 @@ const JobSeekersSection = () => {
     try {
       const token = localStorage.getItem("access_token")
       const response = await fetch(
-        "http://127.0.0.1:5555/payments",
+        "https://main-project-backend-1z6e.onrender.com/payments",
         {
           method: "POST",
           headers: {
@@ -80,7 +80,7 @@ const JobSeekersSection = () => {
     try {
       const token = localStorage.getItem("access_token")
       const response = await fetch(
-        "http://127.0.0.1:5555/contact_requests",
+        "https://main-project-backend-1z6e.onrender.com/contact_requests",
         {
           method: "POST",
           headers: {
@@ -113,7 +113,7 @@ const JobSeekersSection = () => {
     try {
       const token = localStorage.getItem("access_token");
       const response = await fetch(
-        `http://127.0.0.1:5555/jobseekers/${id}`,
+        `https://main-project-backend-1z6e.onrender.com/jobseekers/${id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

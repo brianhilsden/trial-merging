@@ -29,7 +29,7 @@ const OurHistory = () => {
   // getting user name and comanies name
   useEffect(() => {
     const token = localStorage.getItem("access_token")
-    fetch(`http://127.0.0.1:5555/employers/${user.id}`,{
+    fetch(`https://main-project-backend-1z6e.onrender.com/employers/${user.id}`,{
       headers:{
          'Authorization': `Bearer ${token}`
       }
@@ -46,7 +46,7 @@ const OurHistory = () => {
       try {
         const token = localStorage.getItem("access_token")
         const response = await fetch(
-          `http://127.0.0.1:5555/employers/${user.id}`,{
+          `https://main-project-backend-1z6e.onrender.com/employers/${user.id}`,{
             headers:{ 'Authorization': `Bearer ${token}`}
           }
         );

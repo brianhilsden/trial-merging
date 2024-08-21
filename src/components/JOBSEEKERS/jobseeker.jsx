@@ -26,7 +26,7 @@ function ProfileCard() {
       try {
         const token = localStorage.getItem("access_token")
         const response = await fetch(
-          `http://127.0.0.1:5555/jobseekers/${user.id}`,{
+          `https://main-project-backend-1z6e.onrender.com/jobseekers/${user.id}`,{
             headers:{
                'Authorization': `Bearer ${token}`
             }
@@ -51,7 +51,7 @@ function ProfileCard() {
       try {
         const token = localStorage.getItem('access_token');
         const response = await fetch(
-          `http://127.0.0.1:5555/jobseekers/${user.id}`, {
+          `https://main-project-backend-1z6e.onrender.com/jobseekers/${user.id}`, {
             headers: {
               'Authorization': `Bearer ${token}`
           }
@@ -94,7 +94,7 @@ function ProfileCard() {
       const token = localStorage.getItem("access_token")
       const response = profile
         ? await fetch(
-            `http://127.0.0.1:5555/jobseekers/${user.id}`,
+            `https://main-project-backend-1z6e.onrender.com5/jobseekers/${user.id}`,
             {
               method: "PATCH",
               headers: {
@@ -104,7 +104,7 @@ function ProfileCard() {
             }
           )
         : await fetch(
-            `http://127.0.0.1:5555/jobseekers`,
+            `https://main-project-backend-1z6e.onrender.com/jobseekers`,
             {
               method: "POST",
               headers: {
@@ -135,7 +135,7 @@ function ProfileCard() {
     try {
       const token = localStorage.getItem("access_token")
       const response = await fetch(
-        `http://127.0.0.1:5555/jobseekers/${user.id}`,
+        `https://main-project-backend-1z6e.onrender.com/jobseekers/${user.id}`,
         {
           method: "DELETE",
           headers:{ 'Authorization': `Bearer ${token}`}

@@ -13,7 +13,7 @@ function App() {
     const token = localStorage.getItem('access_token');
     // auto-login
     if (token){
-      fetch("http://127.0.0.1:5555/check_session", {
+      fetch("https://main-project-backend-1z6e.onrender.com/check_session", {
         headers: {
           'Authorization': `Bearer ${token}`
         }

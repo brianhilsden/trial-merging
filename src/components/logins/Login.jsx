@@ -20,7 +20,7 @@ const Login = () => {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:5555/login",
+        "https://main-project-backend-1z6e.onrender.com/login",
         {
           // Replace with your backend URL
           method: "POST",

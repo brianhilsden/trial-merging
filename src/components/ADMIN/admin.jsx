@@ -18,7 +18,7 @@ function AdminDashboard() {
       try {
         const token = localStorage.getItem("access_token")
         const response = await fetch(
-          "http://127.0.0.1:5555/jobseekers", {
+          "https://main-project-backend-1z6e.onrender.com/jobseekers", {
             headers: {
               'Authorization': `Bearer ${token}`
           }
@@ -39,7 +39,7 @@ function AdminDashboard() {
       try {
         const token = localStorage.getItem("access_token")
         const response = await fetch(
-          "http://127.0.0.1:5555/employers", {
+          "https://main-project-backend-1z6e.onrender.com/employers", {
             headers: {
               'Authorization': `Bearer ${token}`
             }
@@ -71,7 +71,7 @@ function AdminDashboard() {
         console.log("Removing employer with ID:", id);
         const token = localStorage.getItem("access_token")
         const response = await fetch(
-          `http://127.0.0.1:5555/employers/${id}`,
+          `https://main-project-backend-1z6e.onrender.com/employers/${id}`,
           {
             method: "DELETE",     
             headers: {
@@ -98,7 +98,7 @@ function AdminDashboard() {
         console.log("Removing jobseeker with ID:", id);
         const token = localStorage.getItem("access_token")
         const response = await fetch(
-          `http://127.0.0.1:5555/jobseekers/${id}`,
+          `https://main-project-backend-1z6e.onrender.com/jobseekers/${id}`,
           {
             method: "DELETE",
           

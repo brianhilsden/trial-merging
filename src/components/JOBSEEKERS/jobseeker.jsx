@@ -18,17 +18,26 @@ function ProfileCard() {
   const [isEditing, setIsEditing] = useState(true);
   const [contactRequests, setContactRequests] = useState([]);
   const [viewingMessages, setViewingMessages] = useState(false);
+  const [switched,setSwitched] = useState(false)
   const navigate = useNavigate();
 
   useEffect(() => {
     const fetchProfile = async () => {
       try {
+        const token = localStorage.getItem("access_token")
         const response = await fetch(
-          `https://main-project-backend-1z6e.onrender.com/jobseekers/${user.id}`
+          `http://127.0.0.1:5555/jobseekers/${user.id}`,{
+            headers:{
+               'Authorization': `Bearer ${token}`
+            }
+          }
         );
         if (!response.ok) throw new Error("Failed to fetch profile");
         const data = await response.json();
+        console.log(data);
+        
         setProfile(data);
+        setFormValues(data)
         setIsEditing(false);
       } catch (error) {
         console.error("Error fetching profile:", error);
@@ -38,9 +47,15 @@ function ProfileCard() {
     console.log(profile);
 
     const fetchContactRequests = async () => {
+      
       try {
+        const token = localStorage.getItem('access_token');
         const response = await fetch(
-          `https://main-project-backend-1z6e.onrender.com/jobseekers/${user.id}`
+          `http://127.0.0.1:5555/jobseekers/${user.id}`, {
+            headers: {
+              'Authorization': `Bearer ${token}`
+          }
+        }
         );
         if (!response.ok) throw new Error("Failed to fetch contact requests");
         const data = await response.json();
@@ -55,7 +70,7 @@ function ProfileCard() {
       fetchProfile();
       fetchContactRequests();
     }
-  }, [user?.id]);
+  }, [user]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -76,9 +91,10 @@ function ProfileCard() {
     };
 
     try {
+      const token = localStorage.getItem("access_token")
       const response = profile
         ? await fetch(
-            `https://main-project-backend-1z6e.onrender.com/jobseekers/${user.id}`,
+            `http://127.0.0.1:5555/jobseekers/${user.id}`,
             {
               method: "PATCH",
               headers: {
@@ -88,11 +104,12 @@ function ProfileCard() {
             }
           )
         : await fetch(
-            "https://main-project-backend-1z6e.onrender.com/jobseekers",
+            `http://127.0.0.1:5555/jobseekers`,
             {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
+                'Authorization': `Bearer ${token}`
               },
               body: JSON.stringify(profileData),
             }
@@ -105,16 +122,9 @@ function ProfileCard() {
 
       const updatedProfile = await response.json();
       setProfile(updatedProfile);
-      setFormValues({
-        name: "",
-        work_experience: "",
-        job_category: "",
-        education: "",
-        skills: "",
-        bio: "",
-        salary_expectation: "",
-        resume_file: "",
-      });
+      setFormValues(updatedProfile)
+      setSwitched("profile")
+     
       setIsEditing(false);
     } catch (error) {
       console.error("Error saving profile:", error);
@@ -123,10 +133,12 @@ function ProfileCard() {
 
   const handleDeleteProfile = async () => {
     try {
+      const token = localStorage.getItem("access_token")
       const response = await fetch(
-        `https://main-project-backend-1z6e.onrender.com/jobseekers/${user.id}`,
+        `http://127.0.0.1:5555/jobseekers/${user.id}`,
         {
           method: "DELETE",
+          headers:{ 'Authorization': `Bearer ${token}`}
         }
       );
 
@@ -153,19 +165,14 @@ function ProfileCard() {
   };
 
   const toggleViewMessages = () => {
-    setViewingMessages(!viewingMessages);
+    setSwitched(false);
   };
 
   const handleLogoutClick = () => {
-    fetch("https://main-project-backend-1z6e.onrender.com/logout", {
-      method: "DELETE",
-    })
-      .then((r) => {
-        if (r.ok) {
-          setUser(null);
-        }
-      })
-      .then(() => navigate("/Main-Project-Frontend"));
+    localStorage.removeItem("access_token");
+    setUser(null);
+    navigate("/Main-Project-Frontend")
+    
   };
 
   if (!user) {
@@ -175,26 +182,29 @@ function ProfileCard() {
       </div>
     );
   }
+ console.log(profile);
+ 
+  
 
   return (
     <>
       <nav className="navbar navbar-expand-lg navbar-dark bg-success">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">
+          <span className="navbar-brand" >
             <img
               src="https://img.icons8.com/?size=50&id=pB77uEobJRjy&format=png"
               alt="Acme Employers"
               className="navbar-logo"
             />
             Acme Jobseeker
-          </a>
+          </span>
           <div id="navbarNav">
             <ul className="navbar-nav ms-auto">
               <li className="nav-item">
                 <button //changed
                   className="nav-link"
-                  onClick={() => setIsEditing(true)}
-                  href="#"
+                  onClick={() => setSwitched(true)}
+                 
                 >
                   Edit Profile
                 </button>
@@ -203,7 +213,7 @@ function ProfileCard() {
                 <button //changed
                   onClick={toggleViewMessages}
                   className="nav-link"
-                  href="#"
+               
                 >
                   View Messages
                 </button>
@@ -212,7 +222,7 @@ function ProfileCard() {
                 <button //changed
                   onClick={handleDeleteProfile}
                   className="nav-link"
-                  href="#"
+               
                 >
                   Delete Profile
                 </button>
@@ -221,7 +231,7 @@ function ProfileCard() {
                 <button //changed
                   onClick={handleLogoutClick}
                   className="nav-link"
-                  href="#"
+                
                 >
                   Logout
                 </button>
@@ -232,7 +242,7 @@ function ProfileCard() {
       </nav>
 
       <div className="contact-requests-container">
-        {viewingMessages ? (
+        {switched==false? (
           <div className="contact-requests">
             <div className="requests-header">
               <h3>Contact Requests</h3>
@@ -264,11 +274,11 @@ function ProfileCard() {
                 </li>
               ))}
             </ul>
-            <button onClick={toggleViewMessages} className="back-button">
+            {profile && <button onClick={()=>setSwitched("profile")} className="back-button">
               Back to Profile
-            </button>
+            </button>}
           </div>
-        ) : isEditing ? (
+        ) : switched==true ? (
           <form className="profile-form" onSubmit={handleAddOrUpdateProfile}>
             <div className="profile-form-container">
               <div className="profile-card-2">
@@ -279,7 +289,7 @@ function ProfileCard() {
                   placeholder="Full Name"
                   value={formValues.name}
                   onChange={handleInputChange}
-                  required
+                 
                 />
               </div>
               <div className="profile-card-2">
@@ -289,7 +299,7 @@ function ProfileCard() {
                   placeholder="Experience"
                   value={formValues.work_experience}
                   onChange={handleInputChange}
-                  required
+                  
                 />
               </div>
               <div className="profile-card-2">
@@ -299,7 +309,7 @@ function ProfileCard() {
                   placeholder="Job Category"
                   value={formValues.job_category}
                   onChange={handleInputChange}
-                  required
+                 
                 />
               </div>
               <div className="profile-card-2">
@@ -309,7 +319,7 @@ function ProfileCard() {
                   placeholder="Education"
                   value={formValues.education}
                   onChange={handleInputChange}
-                  required
+                 
                 />
               </div>
               <div className="profile-card-2">
@@ -319,7 +329,7 @@ function ProfileCard() {
                   placeholder="Skills"
                   value={formValues.skills}
                   onChange={handleInputChange}
-                  required
+                 
                 />
               </div>
               <div className="profile-card-2">
@@ -329,7 +339,7 @@ function ProfileCard() {
                   placeholder="Bio"
                   value={formValues.bio}
                   onChange={handleInputChange}
-                  required
+                
                 />
               </div>
               <div className="profile-card-2">
@@ -340,7 +350,7 @@ function ProfileCard() {
                   placeholder="Salary Expectation"
                   value={formValues.salary_expectation}
                   onChange={handleInputChange}
-                  required
+                  
                 />
               </div>
               <div className="profile-card-2">
@@ -350,7 +360,7 @@ function ProfileCard() {
                   placeholder="Resume File URL"
                   value={formValues.resume_file}
                   onChange={handleInputChange}
-                  required
+                  
                 />
               </div>
               <button type="submit" className="save-button">
@@ -359,7 +369,7 @@ function ProfileCard() {
             </div>
           </form>
         ) : (
-          profile && (
+        switched =="profile" && (
             <div className="profile-card-1">
               <h2 className="profile-name">{profile.name}</h2>
               <h4 className="profile-title">{profile.job_category}</h4>

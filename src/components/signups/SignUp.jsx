@@ -3,6 +3,7 @@ import "../../CSS/signups-css/signup.css";
 import { useNavigate, useOutletContext } from "react-router-dom";
 
 const SignUp = () => {
+ 
   const [role, setRole] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
@@ -35,7 +36,7 @@ const SignUp = () => {
 
     try {
       const response = await fetch(
-        "https://main-project-backend-1z6e.onrender.com/signup",
+        "http://127.0.0.1:5555/signup",
         {
           method: "POST",
           headers: {
@@ -47,14 +48,16 @@ const SignUp = () => {
 
       if (response.ok) {
         response.json().then((user_data) => {
-          setUser(user_data);
-          console.log("User data:", user_data); // Debugging log
-          if (user_data.role === "admin") {
+          localStorage.setItem("access_token", user_data.access_token);
+          setUser(user_data.user);
+         
+          console.log("User data:", user_data.user); // Debugging log
+          if (user_data.user.role === "admin") {
             navigate("/Main-Project-Frontend/admin-profile");
-          } else if (user_data.role === "job-seeker") {
+          } else if (user_data.user.role === ("job-seeker"||"jobseeker")) {
             // Ensure the role matches the dropdown value
             navigate("/Main-Project-Frontend/jobseeker-profile");
-          } else if (user_data.role === "employer") {
+          } else if (user_data.user.role === "employer") {
             navigate("/Main-Project-Frontend/employers-profile");
           }
         });
@@ -152,7 +155,7 @@ const SignUp = () => {
       </form>
       <div className="up">
         <p className="don">
-          Have an account? <a href="/Main-Project-Frontend/login">Sign in</a>
+          Have an account? <span onClick={()=>navigate("/Main-Project-Frontend/login")}>Sign in</span>
         </p>
       </div>
     </div>

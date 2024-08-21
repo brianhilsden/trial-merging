@@ -1,23 +1,25 @@
 import React from 'react';
 import '../../CSS/home/home.css'
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
 const Hero = () => {
+  const navigate = useNavigate()
   return (
     <div className="container-fluid home-container">
       <nav className="navbar bg-success navbar-expand-lg navbar-light">
         <div className="container-fluid">
-          <a className="navbar-brand" href="#">
+          <span className="navbar-brand">
             <img src="https://img.icons8.com/?size=50&id=pB77uEobJRjy&format=png" alt="Logo" className="logo" />
-          </a>
+          </span>
           <div className=" justify-content-end" >
             <ul className="navbar-nav">
               <li className="nav-item">
-                <a className="nav-link" href="#about">Login</a>
+                <button className="nav-link" onClick={()=>navigate("/Main-Project-Frontend/login")}>Login</button>
               </li>
               <li className="nav-item">
-                <a className="nav-link" href="#contact">Admin</a>
+                <button className="nav-link" onClick={()=>navigate("/Main-Project-Frontend/signup")}>SignUp</button>
               </li>
             </ul>
           </div>

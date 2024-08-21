@@ -10,8 +10,14 @@ const ServicesSection = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
+        const token = localStorage.getItem("access_token")
         const response = await fetch(
-          `https://main-project-backend-1z6e.onrender.com/employers/${user.id}`
+          `http://127.0.0.1:5555/employers/${user.id}`,
+          {
+            headers:{
+               'Authorization': `Bearer ${token}`
+            }
+          }
         );
         const data = await response.json();
         setServices(data.services_offered);

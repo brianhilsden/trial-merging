@@ -16,8 +16,13 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchJobseekersData = async () => {
       try {
+        const token = localStorage.getItem("access_token")
         const response = await fetch(
-          "https://main-project-backend-1z6e.onrender.com/jobseekers"
+          "http://127.0.0.1:5555/jobseekers", {
+            headers: {
+              'Authorization': `Bearer ${token}`
+          }
+        }
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -32,8 +37,13 @@ function AdminDashboard() {
 
     const fetchEmployersData = async () => {
       try {
+        const token = localStorage.getItem("access_token")
         const response = await fetch(
-          "https://main-project-backend-1z6e.onrender.com/employers"
+          "http://127.0.0.1:5555/employers", {
+            headers: {
+              'Authorization': `Bearer ${token}`
+            }
+          }
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -59,10 +69,15 @@ function AdminDashboard() {
     if (window.confirm("Are you sure you want to remove this employer?")) {
       try {
         console.log("Removing employer with ID:", id);
+        const token = localStorage.getItem("access_token")
         const response = await fetch(
-          `https://main-project-backend-1z6e.onrender.com/employers/${id}`,
+          `http://127.0.0.1:5555/employers/${id}`,
           {
-            method: "DELETE",
+            method: "DELETE",     
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+          
           }
         );
         if (response.ok) {
@@ -81,15 +96,21 @@ function AdminDashboard() {
     if (window.confirm("Are you sure you want to remove this jobseeker?")) {
       try {
         console.log("Removing jobseeker with ID:", id);
+        const token = localStorage.getItem("access_token")
         const response = await fetch(
-          `https://main-project-backend-1z6e.onrender.com/jobseekers/${id}`,
+          `http://127.0.0.1:5555/jobseekers/${id}`,
           {
             method: "DELETE",
+          
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+
           }
         );
         if (response.ok) {
           console.log("Jobseeker removed successfully");
-          setJobseekers(jobseekers.filter((jobseeker) => jobseeker.id !== id));
+          setJobseekers(jobseekers.filter((jobseeker) => jobseeker.user.id !== id));
         } else {
           console.error("Error removing jobseeker:", response.statusText);
         }
@@ -101,19 +122,10 @@ function AdminDashboard() {
 
   // handle log out
   function handleLogoutClick() {
-    fetch("https://main-project-backend-1z6e.onrender.com/logout", {
-      method: "DELETE",
-    })
-      .then((r) => {
-        if (r.ok) {
-          setUser(null);
-          console.log("Logout successful");
-          navigate("/Main-Project-Frontend"); // Redirect after logout
-        } else {
-          console.error("Logout failed", r.statusText);
-        }
-      })
-      .catch((error) => console.error("Network error during logout:", error));
+    localStorage.removeItem("access_token");
+    setUser(null);
+    navigate("/Main-Project-Frontend")
+     
   }
 
   const handleViewJobseeker = (jobseeker) => {
@@ -130,14 +142,14 @@ function AdminDashboard() {
   return (
     <div className="container-fluid">
       <nav className="navbar navbar-dark bg-success">
-        <a className="navbar-brand" href="#">
+        <span className="navbar-brand">
           <img
             src="https://img.icons8.com/?size=50&id=pB77uEobJRjy&format=png"
             alt="Acme Employers"
             className="navbar-logo"
           />
           Acme Admins
-        </a>
+        </span>
         <div className="d-flex align-items-center me-5">
           <button className="btn btn-outline-light" onClick={handleLogoutClick}>
             Logout
@@ -167,7 +179,7 @@ function AdminDashboard() {
                   <tr key={jobseeker.id}>
                     <td>{jobseeker.user.username}</td>
                     <td>{jobseeker.user.email}</td>
-                    <td>{jobseeker.jobCategory}</td>
+                    <td>{jobseeker.job_category}</td>
                     <td>
                       <button
                         className="btn btn-info btn-sm me-2"
@@ -177,7 +189,7 @@ function AdminDashboard() {
                       </button>
                       <button
                         className="btn btn-danger btn-sm"
-                        onClick={() => handleRemoveJobseeker(jobseeker.id)}
+                        onClick={() => handleRemoveJobseeker(jobseeker.user.id)}
                       >
                         Remove
                       </button>
